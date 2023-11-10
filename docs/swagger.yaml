@@ -1,0 +1,269 @@
+definitions:
+  handler.DepositData:
+    properties:
+      deposit_amount:
+        example: 1000
+        format: float
+        type: number
+    type: object
+  handler.RentData:
+    properties:
+      book_id:
+        example: 1
+        type: integer
+      rental_date:
+        example: "2023-11-09"
+        format: date
+        type: string
+      return_date:
+        example: "2023-11-16"
+        format: date
+        type: string
+    type: object
+  handler.User:
+    properties:
+      email:
+        type: string
+      id:
+        description: Field-field dari struktur pengguna Anda disini
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /books/rent:
+    post:
+      consumes:
+      - application/json
+      description: Rent a book for a user
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Rental information
+        in: body
+        name: rentData
+        required: true
+        schema:
+          $ref: '#/definitions/handler.RentData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Book rental successful
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request data or insufficient deposit
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Invalid or expired token
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Book not found or out of stock
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Failed to create rental history or update book stock
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Rent a book
+      tags:
+      - books
+  /categories:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all categories
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of all categories
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Invalid or expired token
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Failed to fetch categories
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all categories
+      tags:
+      - categories
+  /users/deposit:
+    post:
+      consumes:
+      - application/json
+      description: Deposit an amount to user's account and update Xendit
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Deposit amount data
+        in: body
+        name: depositData
+        required: true
+        schema:
+          $ref: '#/definitions/handler.DepositData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deposit successful
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request data or insufficient deposit
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Invalid or expired token
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: User not found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Failed to update deposit amount or send deposit to Xendit
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Deposit an amount to user's account
+      tags:
+      - users
+  /users/login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user and generate JWT token
+      parameters:
+      - description: User credentials for login
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: User not found or invalid password
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error generating token
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login a user
+      tags:
+      - users
+  /users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user in the system
+      parameters:
+      - description: User  credentials for registered
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handler.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created successfully
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid request data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Failed to create user
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register a new user
+      tags:
+      - users
+  /users/rental-history:
+    get:
+      consumes:
+      - application/json
+      description: Get rental history for a user based on the JWT token
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Rental history for user
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Invalid or expired token
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Failed to fetch rental history
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get rental history for a user
+      tags:
+      - users
+swagger: "2.0"
